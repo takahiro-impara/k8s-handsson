@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-pod
+  labels:
+    name: sample-pod
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  - name: redis-container
+    image: redis:latest
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-pod
+  labels:
+    name: sample-pod
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest
+  #podはportやip address空間を共有するため、以下は起動してこない
+  #kubectl get pods or kubectl logs [pod name] -c [container name]で確認
+  - name: nginx-container-2
+    image: nginx:latest
