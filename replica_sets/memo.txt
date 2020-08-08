@@ -1,0 +1,16 @@
+replica_sets:ipap$ kubectl get pods -l app=sample-pod -o wide
+NAME              READY   STATUS    RESTARTS   AGE    IP          NODE                                               NOMINATED NODE   READINESS GATES
+sample-rs-2qd8s   2/2     Running   0          117s   10.4.2.4    gke-handson-cluster01-default-pool-b342d61d-79bf   <none>           <none>
+sample-rs-mddbl   2/2     Running   0          117s   10.4.1.11   gke-handson-cluster01-default-pool-b342d61d-l0b4   <none>           <none>
+sample-rs-rtmn5   2/2     Running   0          117s   10.4.0.7    gke-handson-cluster01-default-pool-b342d61d-9d65   <none>           <none>
+
+kubectl delete pod sample-rs-2qd8s  
+すぐに再作成される
+
+kubectl describe rs
+rsの増減履歴を確認
+
+replica setのスケールの仕方
+1.マニュフェスト（yamファイル）を更新してkubectl apply を実行
+2.kubectl scaleコマンドを利用する　
+

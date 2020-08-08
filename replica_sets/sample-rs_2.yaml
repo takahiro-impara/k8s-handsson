@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: sample-2-rs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-pod
+  template:
+    metadata:
+      labels:
+        app: sample-pod
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      - name: redis-container
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"

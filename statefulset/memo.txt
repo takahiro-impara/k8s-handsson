@@ -1,0 +1,70 @@
+概要
+データベースなどステートフルなアプリケーションを動かす際に利用するreplicasetの派生
+再作成した場合でもpod名が変わらない
+persistent diskを利用している場合は、同じボリュームを利用できる
+
+
+statefulset:ipap$ kubectl get statefulsets
+NAME                 READY   AGE
+sample-statefulset   3/3     2m22s
+
+
+statefulset:ipap$ kubectl get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+sample-statefulset-0   1/1     Running   0          110s
+sample-statefulset-1   1/1     Running   0          90s
+sample-statefulset-2   1/1     Running   0          73s
+
+レプリカセット増減時の挙動
+一台ずつシーケンシャルに増減
+削除時: 新しいpodから削除
+増加：+1でインクリメント
+
+# 永続化データの確認
+statefulset:ipap$ kubectl exec -it sample-statefulset-0 -- df -h | grep dev/sd
+/dev/sda1        95G  2.9G   92G   4% /etc/hosts
+/dev/sdb        976M  2.6M  958M   1% /usr/share/nginx/html
+
+## ファイルがないことを確認
+statefulset:ipap$ kubectl exec -it sample-statefulset-0 ls /usr/share/nginx/html/sample.html
+ls: cannot access '/usr/share/nginx/html/sample.html': No such file or directory
+
+## ファイルを作成
+statefulset:ipap$ kubectl exec -it sample-statefulset-0 touch /usr/share/nginx/html/sample.html
+
+statefulset:ipap$ kubectl exec -it sample-statefulset-0 ls /usr/share/nginx/html/sample.html
+/usr/share/nginx/html/sample.html
+
+## podの削除
+statefulset:ipap$ kubectl delete -f sample-stateful.yaml
+
+## podの作成
+statefulset:ipap$ kubectl apply -f sample-stateful.yaml
+
+## ファイルがあることを確認
+statefulset:ipap$ kubectl exec -it sample-statefulset-0 ls /usr/share/nginx/html/sample.html
+
+#persistent diskの確認
+statefulset:ipap$ kubectl get persistentvolumes
+pvc-c54e108c-2ed1-4d69-bd0d-f0ea5bd63ed0   1Gi        RWO            Delete           Bound    default/www-sample-statefulset-8    standard                11m
+pvc-e512c3d3-5086-4131-86ca-4ca1b5530dc1   1Gi        RWO            Delete           Bound    default/www-sample-statefulset-2    standard                20m
+pvc-f6ab76b6-8ab2-4623-abc8-4370d7637c6e   1Gi        RWO            Delete           Bound    default/www-sample-statefulset-4    standard                16m
+
+#persistent diskの削除
+statefulset:ipap$ kubectl delete persistentvolumeclaims www-sample-statefulset-{0..14}
+persistentvolumeclaim "www-sample-statefulset-0" deleted
+persistentvolumeclaim "www-sample-statefulset-1" deleted
+persistentvolumeclaim "www-sample-statefulset-2" deleted
+persistentvolumeclaim "www-sample-statefulset-3" deleted
+persistentvolumeclaim "www-sample-statefulset-4" deleted
+persistentvolumeclaim "www-sample-statefulset-5" deleted
+persistentvolumeclaim "www-sample-statefulset-6" deleted
+persistentvolumeclaim "www-sample-statefulset-7" deleted
+persistentvolumeclaim "www-sample-statefulset-8" deleted
+persistentvolumeclaim "www-sample-statefulset-9" deleted
+persistentvolumeclaim "www-sample-statefulset-10" deleted
+persistentvolumeclaim "www-sample-statefulset-11" deleted
+persistentvolumeclaim "www-sample-statefulset-12" deleted
+persistentvolumeclaim "www-sample-statefulset-13" deleted
+persistentvolumeclaim "www-sample-statefulset-14" deleted
+

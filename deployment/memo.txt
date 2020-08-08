@@ -1,0 +1,12 @@
+kubectl set image deployment  sample-deployment nginx-container=nginx:1.13
+
+deployment:ipap$ kubectl get replicasets.
+NAME                           DESIRED   CURRENT   READY   AGE
+sample-deployment-576dd95d6f   3         3         2       32s
+sample-deployment-5dd546c557   1         1         1       2m48s
+deployment:ipap$ kubectl get pods
+
+NAME                                 READY   STATUS    RESTARTS   AGE
+sample-deployment-576dd95d6f-6xsxk   1/1     Running   0          51s
+sample-deployment-576dd95d6f-7j7bl   1/1     Running   0          39s
+sample-deployment-576dd95d6f-kjmwp   1/1     Running   0          62s
