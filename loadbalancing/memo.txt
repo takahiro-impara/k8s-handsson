@@ -1,0 +1,55 @@
+loadbalancing:ipap$ kubectl apply -f sample-clusterip.yaml 
+service/sample-pod created
+loadbalancing:ipap$ kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP    24h
+sample-pod   ClusterIP   10.0.5.110   <none>        8080/TCP   11s
+loadbalancing:ipap$ kubectl get services sample-pod 
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+sample-pod   ClusterIP   10.0.5.110   <none>        8080/TCP   22s
+loadbalancing:ipap$ kubectl get services sample-pod
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+sample-pod   ClusterIP   10.0.5.110   <none>        8080/TCP   26s
+loadbalancing:ipap$ kubectl get services           
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP    24h
+sample-pod   ClusterIP   10.0.5.110   <none>        8080/TCP   53s
+loadbalancing:ipap$ 
+loadbalancing:ipap$ kubectl describe svc sample-pod 
+Name:              sample-pod
+Namespace:         default
+Labels:            <none>
+Annotations:       kubectl.kubernetes.io/last-applied-configuration:
+                     {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"sample-pod","namespace":"default"},"spec":{"ports":[{"name":"http...
+Selector:          app=sample-pod
+Type:              ClusterIP
+IP:                10.0.5.110
+Port:              http-port  8080/TCP
+TargetPort:        80/TCP
+Endpoints:         10.4.0.38:80,10.4.0.39:80,10.4.1.25:80 + 1 more...
+Session Affinity:  None
+Events:            <none>
+loadbalancing:ipap$ kubectl get pods -L app=sample-pod -o custom-columns="NAME:{metadata.name},IP:{status.podIP}"
+NAME              IP
+sample-rs-5q7gn   10.4.0.38
+sample-rs-hfkfz   10.4.0.39
+sample-rs-vdlr6   10.4.1.25
+sample-rs-wmc7s   10.4.2.25
+loadbalancing:ipap$ kubectl exec -it 10.4.0.38 -- cp /etc/hostname /usr/share/nginx/html/index.html
+Error from server (NotFound): pods "10.4.0.38" not found
+loadbalancing:ipap$ kubectl exec -it sample-rs-5q7gn -- cp /etc/hostname /usr/share/nginx/html/index.html
+Defaulting container name to nginx-container.
+Use 'kubectl describe pod/sample-rs-5q7gn -n default' to see all of the containers in this pod.
+loadbalancing:ipap$ kubectl exec -it sample-rs-5q7gn cat /usr/share/nginx/html/index.html
+Defaulting container name to nginx-container.
+Use 'kubectl describe pod/sample-rs-5q7gn -n default' to see all of the containers in this pod.
+sample-rs-5q7gn
+loadbalancing:ipap$ kubectl exec -it sample-rs-hfkfz -- cp /etc/hostname /usr/share/nginx/html/index.html
+Defaulting container name to nginx-container.
+Use 'kubectl describe pod/sample-rs-hfkfz -n default' to see all of the containers in this pod.
+loadbalancing:ipap$ kubectl exec -it sample-rs-vdlr6 -- cp /etc/hostname /usr/share/nginx/html/index.html
+Defaulting container name to nginx-container.
+Use 'kubectl describe pod/sample-rs-vdlr6 -n default' to see all of the containers in this pod.
+loadbalancing:ipap$ kubectl exec -it sample-rs-wmc7s  -- cp /etc/hostname /usr/share/nginx/html/index.html
+Defaulting container name to nginx-container.
+Use 'kubectl describe pod/sample-rs-wmc7s -n default' to see all of the containers in this pod.

@@ -1,0 +1,25 @@
+# 作成直後のcronjob（まだ実行されていない）
+cronjob:ipap$ kubectl get cronjobs.batch 
+NAME             SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+sample-cronjob   */1 * * * *   False     0        <none>          10s
+
+# jobの実行状況確認
+cronjob:ipap$ kubectl get jobs.batch 
+NAME                        COMPLETIONS   DURATION   AGE
+sample-cronjob-1596957780   0/1           11s        11s
+
+# 時間経過あとののcronjob（LAST SCHEDULEが更新されていることを確認）
+cronjob:ipap$ kubectl get cronjobs.batch
+NAME             SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+sample-cronjob   */1 * * * *   False     1        41s             59s
+
+# jobの実行状況確認
+cronjob:ipap$ kubectl get jobs.batch    
+NAME                        COMPLETIONS   DURATION   AGE
+sample-cronjob-1596957780   1/1           55s        59s
+
+
+# job一時提示後の状況確認(SUSPENDがtrueになる)
+cronjob:ipap$ kubectl get cronjobs.batch 
+NAME             SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+sample-cronjob   */1 * * * *   True      1        23s             8m41s
