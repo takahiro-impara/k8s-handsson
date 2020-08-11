@@ -11,10 +11,10 @@ spec:
     resources:
       limits:
         memory: "128Mi"
-        cpu: "500m"
+        cpu: "100m"
   - name: redis-container
     image: redis:latest
     resources:
       limits:
         memory: "128Mi"
-        cpu: "500m"
+        cpu: "100m"
